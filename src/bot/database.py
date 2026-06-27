@@ -1,6 +1,6 @@
 """
-Database module for PolyTerm Telegram Bot.
-Handles all database operations with SQLite.
+Модуль базы данных для PolyTerm Telegram бота.
+Обрабатывает все операции с базой данных SQLite.
 """
 import sqlite3
 from datetime import datetime, timedelta

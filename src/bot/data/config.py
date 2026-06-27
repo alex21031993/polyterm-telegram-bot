@@ -1,6 +1,6 @@
 """
-Configuration module for PolyTerm Telegram Bot.
-Loads environment variables and defines constants.
+Модуль конфигурации для PolyTerm Telegram бота.
+Загружает переменные окружения и определяет константы.
 """
 import os
 from pathlib import Path
@@ -39,11 +39,14 @@ SUBSCRIBE_AMOUNT_BY_PLANS = {
 
 # PolyTerm configuration
 POLYTERM_PATH = "/home/alexandr/.local/bin/polyterm"
-POLYTERM_TIMEOUT = 30  # seconds
+POLYTERM_TIMEOUT = 120  # seconds (2 minutes)
 
 # TradingAgents configuration
 TRADING_AGENTS_PATH = str(project_filepath / "TradingAgents")
-TRADING_AGENTS_TIMEOUT = 300  # seconds
+TRADING_AGENTS_TIMEOUT = 600  # seconds (10 minutes)
+
+# TradingAgents environment
+TRADINGAGENTS_PATH = "/home/alexandr/tradingagents_env/venv/lib/python3.13/site-packages"
 
 # Payment monitoring configuration
 PAYMENT_CHECK_INTERVAL = 30  # seconds

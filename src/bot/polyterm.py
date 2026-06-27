@@ -1,6 +1,6 @@
 """
-PolyTerm executor module.
-Handles execution of PolyTerm commands.
+Модуль исполнителя PolyTerm.
+Обрабатывает выполнение команд PolyTerm.
 """
 import subprocess
 import os
@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 def check_polyterm_installed() -> bool:
-    """Check if PolyTerm is installed."""
+    """Проверить установлен ли PolyTerm."""
     if os.path.exists(POLYTERM_PATH):
         return True
-    # Also check if polyterm is in PATH
+    # Также проверить polyterm в PATH
     try:
         result = subprocess.run(
             ["which", "polyterm"],
@@ -31,19 +31,19 @@ def check_polyterm_installed() -> bool:
 
 def execute_polyterm_command(command: str) -> str:
     """
-    Execute a PolyTerm command with timeout.
+    Выполнить команду PolyTerm с таймаутом.
     
     Args:
-        command: The PolyTerm command to execute
+        command: Команда PolyTerm для выполнения
         
     Returns:
-        Command output or error message
+        Вывод команды или сообщение об ошибке
     """
     if not check_polyterm_installed():
-        return "❌ Error: PolyTerm is not installed.\n\nPlease install PolyTerm first."
+        return "❌ Ошибка: PolyTerm не установлен.\n\nПожалуйста, установите PolyTerm сначала."
     
     try:
-        # Use polyterm from PATH if not at configured path
+        # Использовать polyterm из PATH если не по настроенному пути
         polyterm_cmd = POLYTERM_PATH if os.path.exists(POLYTERM_PATH) else "polyterm"
         
         result = subprocess.run(
@@ -54,20 +54,20 @@ def execute_polyterm_command(command: str) -> str:
         )
         
         if result.returncode == 0:
-            return f"✅ Output:\n\n{result.stdout}"
+            return f"✅ Вывод:\n\n{result.stdout}"
         else:
-            return f"❌ Error:\n{result.stderr}"
+            return f"❌ Ошибка:\n{result.stderr}"
             
     except subprocess.TimeoutExpired:
-        return f"❌ Error: Command timed out after {POLYTERM_TIMEOUT} seconds."
+        return f"❌ Ошибка: Время выполнения команды истекло через {POLYTERM_TIMEOUT} секунд."
     except FileNotFoundError:
-        return "❌ Error: PolyTerm executable not found."
+        return "❌ Ошибка: Исполняемый файл PolyTerm не найден."
     except Exception as e:
-        logger.error(f"Error executing PolyTerm command: {e}")
-        return f"❌ Error executing command: {str(e)}"
+        logger.error(f"Ошибка выполнения команды PolyTerm: {e}")
+        return f"❌ Ошибка выполнения команды: {str(e)}"
 
 
-# Mapping of button labels to PolyTerm commands
+# Соответствие меток кнопок командам PolyTerm
 POLYTERM_COMMANDS: Dict[str, str] = {
     "monitor_markets": "monitor --limit 5 --once",
     "live_monitor": "monitor --refresh 5 --limit 5",
@@ -96,16 +96,16 @@ POLYTERM_COMMANDS: Dict[str, str] = {
 
 def execute_command_by_key(command_key: str) -> str:
     """
-    Execute a PolyTerm command by its key.
+    Выполнить команду PolyTerm по её ключу.
     
     Args:
-        command_key: The key from POLYTERM_COMMANDS
+        command_key: Ключ из POLYTERM_COMMANDS
         
     Returns:
-        Command output or error message
+        Вывод команды или сообщение об ошибке
     """
     if command_key not in POLYTERM_COMMANDS:
-        return f"❌ Unknown command: {command_key}"
+        return f"❌ Неизвестная команда: {command_key}"
     
     command = POLYTERM_COMMANDS[command_key]
     return execute_polyterm_command(command)

@@ -14,7 +14,6 @@ A complete Telegram bot that integrates PolyTerm (terminal client for Polymarket
 
 - Python 3.11+
 - PolyTerm (installed at `/home/alexandr/.local/bin/polyterm`)
-- TradingAgents framework
 - Telegram Bot Token
 
 ## Installation
@@ -56,7 +55,15 @@ rm -rf db/database.db*
 mkdir -p db
 ```
 
-### 6. Run the bot
+### 6. Configure TradingAgents path (optional)
+
+If your TradingAgents framework is not at `/workspace`, set the path in config.py or environment:
+
+```bash
+export TRADINGAGENTS_PATH=/path/to/tradingagents
+```
+
+### 7. Run the bot
 
 ```bash
 source venv/bin/activate
@@ -74,6 +81,7 @@ python -m src.bot.app
 │       ├── keyboards.py         # Inline keyboard definitions
 │       ├── database.py          # SQLite database operations
 │       ├── polyterm.py          # PolyTerm command executor
+│       ├── tradingagents.py     # TradingAgents integration module
 │       ├── payment.py           # USDT TRC20 payment verification
 │       └── data/
 │           └── config.py        # Configuration constants
@@ -137,13 +145,73 @@ python -m src.bot.app
 22. Help
 23. TradingAgents Analysis
 
-## TradingAgents Supported Tickers
+## TradingAgents Analysis
 
-**Stocks**: AAPL, TSLA, NVDA, MSFT, GOOGL, AMZN, META
+The bot integrates with the TradingAgents framework to provide AI-powered market analysis.
 
-**Crypto**: BTC-USD, ETH-USD, SOL-USD
+### Supported Tickers
 
-**ETF**: SPY, QQQ, DIA
+**Stocks**: AAPL, TSLA, NVDA, MSFT, GOOGL, AMZN, META, AMD, INTC, NFLX
+
+**Crypto**: BTC-USD, ETH-USD, SOL-USD, BNB-USD, XRP-USD
+
+**ETF**: SPY, QQQ, DIA, IWM, VTI
+
+### Usage
+
+```
+/trade AAPL     # Stock analysis
+/trade BTC-USD  # Crypto analysis
+/trade SPY      # ETF analysis
+```
+
+### How It Works
+
+1. The bot validates the ticker symbol
+2. Runs the TradingAgents multi-agent analysis pipeline
+3. Returns a formatted decision (BUY/SELL/HOLD) with supporting analysis
+
+### Extended Supported Tickers
+
+The bot supports additional tickers beyond the basic set:
+- **More Stocks**: AMD, INTC, NFLX
+- **More Crypto**: BNB-USD, XRP-USD
+- **More ETF**: IWM, VTI
+
+## TradingAgents Module Functions
+
+The `tradingagents.py` module provides the following functions:
+
+### `check_tradingagents_installed()`
+- Checks if the TradingAgents framework is available
+- Returns: `bool`
+
+### `get_ticker_info(ticker)`
+- Get ticker type and info
+- Args: `ticker` (str) - ticker symbol
+- Returns: `dict` with keys: `type` ("stock"/"crypto"/"etf"), `name`
+
+### `validate_ticker(ticker)`
+- Validate if ticker is supported
+- Args: `ticker` (str) - ticker symbol
+- Returns: `Tuple[bool, str]` - (is_valid, normalized_ticker_or_error)
+
+### `run_trading_analysis(ticker, trade_date=None, debug=False)`
+- Run TradingAgents analysis for a given ticker
+- Args:
+  - `ticker` (str) - Stock, crypto, or ETF ticker symbol
+  - `trade_date` (str, optional) - Date for analysis (YYYY-MM-DD), defaults to today
+  - `debug` (bool) - Enable debug mode
+- Returns: `Tuple[str, Optional[str]]` - (analysis_result, error_message)
+
+### `format_analysis_result(ticker, ticker_info, decision)`
+- Format the analysis result for Telegram display
+- Args: ticker, ticker_info dict, decision string
+- Returns: `str` - formatted message
+
+### `get_supported_tickers_list()`
+- Get formatted list of supported tickers
+- Returns: `str` - HTML formatted list
 
 ## Admin Features
 
@@ -192,6 +260,7 @@ All bot activity is logged:
 - Payment transactions
 - Errors and exceptions
 - Admin actions
+- TradingAgents analysis requests
 
 ## Security
 
@@ -218,6 +287,11 @@ All bot activity is logged:
 1. Verify PolyTerm is installed at configured path
 2. Check PolyTerm is in system PATH
 3. Test PolyTerm manually in terminal
+
+### TradingAgents analysis not working
+1. Verify TradingAgents path is correct in config.py
+2. Ensure all dependencies are installed (yfinance, tradingagents)
+3. Check that LLM API keys are configured in the TradingAgents .env
 
 ## License
 
