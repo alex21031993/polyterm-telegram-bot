@@ -45,7 +45,7 @@ Create a `.env` file:
 
 ```bash
 BOT_TOKEN=your_telegram_bot_token_here
-ADMIN_PASSWORD=Alex1234$
+ADMIN_PASSWORD=
 ```
 
 ### 5. Initialize database
