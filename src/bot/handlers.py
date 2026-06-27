@@ -270,9 +270,12 @@ async def cmd_broadcast(message: Message) -> None:
     
     for user in users:
         try:
+            # Экранируем HTML символы для безопасности
+            safe_message = broadcast_message.replace("<", "&lt;").replace(">", "&gt;")
+            
             await message.bot.send_message(
                 user['user_id'],
-                f"📢 <b>Сообщение:</b>\n\n{broadcast_message}",
+                f"📢 <b>Сообщение:</b>\n\n{safe_message}",
                 parse_mode="HTML"
             )
             success_count += 1
@@ -745,9 +748,12 @@ async def process_broadcast_message(message: Message, state: FSMContext) -> None
     
     for user in users:
         try:
+            # Экранируем HTML символы для безопасности
+            safe_message = broadcast_message.replace("<", "&lt;").replace(">", "&gt;")
+            
             await message.bot.send_message(
                 user['user_id'],
-                f"📢 <b>Сообщение:</b>\n\n{broadcast_message}",
+                f"📢 <b>Сообщение:</b>\n\n{safe_message}",
                 parse_mode="HTML"
             )
             success_count += 1
