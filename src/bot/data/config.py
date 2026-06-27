@@ -46,7 +46,7 @@ TRADING_AGENTS_PATH = str(project_filepath / "TradingAgents")
 TRADING_AGENTS_TIMEOUT = 300  # seconds
 
 # TradingAgents environment
-TRADINGAGENTS_PATH = "/workspace"
+TRADINGAGENTS_PATH = "/home/alexandr/tradingagents_env/venv/lib/python3.13/site-packages"
 
 # Payment monitoring configuration
 PAYMENT_CHECK_INTERVAL = 30  # seconds
