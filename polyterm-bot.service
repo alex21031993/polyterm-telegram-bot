@@ -1,0 +1,14 @@
+[Unit]
+Description=PolyTerm Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=alexandr
+WorkingDirectory=/home/alexandr/subscribe
+ExecStart=/home/alexandr/subscribe/venv/bin/python -m src.bot.app
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
