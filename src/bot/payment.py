@@ -1,6 +1,6 @@
 """
-Payment module for USDT TRC20 transactions.
-Handles payment verification via TronGrid API.
+Модуль платежей для USDT TRC20 транзакций.
+Обрабатывает верификацию платежей через TronGrid API.
 """
 import requests
 import time
@@ -27,15 +27,15 @@ def check_usdt_payment(
     since_timestamp: Optional[int] = None
 ) -> Optional[Dict[str, Any]]:
     """
-    Check for USDT TRC20 payment via TronGrid API.
+    Проверить USDT TRC20 платеж через TronGrid API.
     
     Args:
-        wallet_address: The wallet address to check
-        expected_amount: Expected payment amount in USDT
-        since_timestamp: Unix timestamp to search from
+        wallet_address: Адрес кошелька для проверки
+        expected_amount: Ожидаемая сумма платежа в USDT
+        since_timestamp: Unix timestamp для поиска с
         
     Returns:
-        Transaction info if found, None otherwise
+        Информация о транзакции если найдена, None в противном случае
     """
     try:
         # TronGrid API endpoint for TRC20 transactions
@@ -94,7 +94,7 @@ def check_usdt_payment(
         logger.error(f"TronGrid API request error: {e}")
         return None
     except Exception as e:
-        logger.error(f"Error checking USDT payment: {e}")
+        logger.error(f"Ошибка проверки USDT платежа: {e}")
         return None
 
 
@@ -106,23 +106,23 @@ async def monitor_payment(
     chat_id: int
 ) -> Optional[str]:
     """
-    Background task to monitor for USDT payment.
+    Фоновая задача для мониторинга USDT платежа.
     
     Args:
-        user_id: User ID
-        expected_amount: Expected payment amount
-        plan_months: Subscription plan months
-        bot: Aiogram bot instance
-        chat_id: User's chat ID
+        user_id: ID пользователя
+        expected_amount: Ожидаемая сумма платежа
+        plan_months: Количество месяцев подписки
+        bot: Экземпляр Aiogram бота
+        chat_id: ID чата пользователя
         
     Returns:
-        Transaction hash if found, None otherwise
+        Хеш транзакции если найден, None в противном случае
     """
     start_time = int(time.time())
     
     for attempt in range(PAYMENT_MAX_ATTEMPTS):
         try:
-            # Check for payment
+            # Проверить платеж
             payment_info = check_usdt_payment(
                 USDT_TRC20_WALLET_ADDRESS,
                 expected_amount,
@@ -132,14 +132,14 @@ async def monitor_payment(
             if payment_info:
                 tx_hash = payment_info["tx_hash"]
                 
-                # Check if payment already processed
+                # Проверить обработан ли платеж
                 existing = db.get_payment_by_txhash(tx_hash)
                 if existing:
                     if existing["status"] == "confirmed":
                         return tx_hash
                     continue
                 
-                # Create payment record
+                # Создать запись о платеже
                 payment_id = db.create_payment(
                     user_id=user_id,
                     amount=expected_amount,
@@ -147,53 +147,53 @@ async def monitor_payment(
                     plan_months=plan_months
                 )
                 
-                # Confirm payment
+                # Подтвердить платеж
                 db.update_payment_status(payment_id, "confirmed")
                 db.update_user_subscription(user_id, plan_months)
                 
-                # Notify user
+                # Уведомить пользователя
                 await bot.send_message(
                     chat_id,
-                    f"🎉 Payment received!\n\n"
-                    f"Amount: {expected_amount} USDT\n"
-                    f"Transaction: `{tx_hash}`\n"
-                    f"Subscription: {plan_months} month(s)\n\n"
-                    f"Your subscription is now active!",
+                    f"🎉 Платеж получен!\n\n"
+                    f"Сумма: {expected_amount} USDT\n"
+                    f"Транзакция: `{tx_hash}`\n"
+                    f"Подписка: {plan_months} мес.\n\n"
+                    f"Ваша подписка теперь активна!",
                     parse_mode="Markdown"
                 )
                 
                 return tx_hash
             
-            # Update progress every 5 attempts
+            # Обновить прогресс каждые 5 попыток
             if attempt > 0 and attempt % 5 == 0:
                 remaining = PAYMENT_MAX_ATTEMPTS - attempt
                 remaining_minutes = remaining * PAYMENT_CHECK_INTERVAL // 60
                 try:
                     await bot.send_message(
                         chat_id,
-                        f"⏳ Still waiting for payment...\n"
-                        f"Remaining checks: {remaining} (~{remaining_minutes} min)"
+                        f"⏳ Ожидание платежа...\n"
+                        f"Осталось проверок: {remaining} (~{remaining_minutes} мин)"
                     )
                 except Exception:
                     pass
             
-            # Wait before next check
+            # Ждать перед следующей проверкой
             await asyncio.sleep(PAYMENT_CHECK_INTERVAL)
             
         except asyncio.CancelledError:
-            logger.info(f"Payment monitoring cancelled for user {user_id}")
+            logger.info(f"Мониторинг платежа отменен для пользователя {user_id}")
             break
         except Exception as e:
-            logger.error(f"Error in payment monitoring: {e}")
+            logger.error(f"Ошибка в мониторинге платежа: {e}")
             await asyncio.sleep(PAYMENT_CHECK_INTERVAL)
     
-    # Max attempts reached, notify user
+    # Достигнуто максимальное количество попыток, уведомить пользователя
     try:
         await bot.send_message(
             chat_id,
-            "⏰ Payment not received within 20 minutes.\n"
-            "Please make sure you sent the exact amount to the correct address.\n"
-            "If you already made the payment, contact support."
+            "⏰ Платеж не получен в течение 20 минут.\n"
+            "Пожалуйста, убедитесь, что отправили точную сумму на правильный адрес.\n"
+            "Если вы уже сделали платеж, обратитесь в поддержку."
         )
     except Exception:
         pass
@@ -203,22 +203,22 @@ async def monitor_payment(
 
 def validate_tx_hash(tx_hash: str) -> bool:
     """
-    Validate a transaction hash.
+    Проверить хеш транзакции.
     
     Args:
-        tx_hash: Transaction hash to validate
+        tx_hash: Хеш транзакции для проверки
         
     Returns:
-        True if valid, False otherwise
+        True если валиден, False в противном случае
     """
     if not tx_hash:
         return False
     
-    # TRC20 transaction hashes are 64 character hex strings
+    # TRC20 хеши транзакций - это 64-символьные hex строки
     if len(tx_hash) < 30:
         return False
     
-    # Should be hexadecimal
+    # Должен быть шестнадцатеричным
     try:
         int(tx_hash, 16)
         return True

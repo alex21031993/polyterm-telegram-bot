@@ -1,8 +1,8 @@
 """
-PolyTerm Telegram Bot - Main Application Entry Point
+PolyTerm Telegram Бот - Главная точка входа приложения
 
-This bot provides access to PolyTerm commands and TradingAgents analysis
-through a Telegram interface with USDT TRC20 subscription system.
+Этот бот предоставляет доступ к командам PolyTerm и анализу TradingAgents
+через интерфейс Telegram с системой подписки USDT TRC20.
 """
 import asyncio
 import logging
@@ -25,7 +25,7 @@ from .handlers import router
 
 
 def setup_logging() -> None:
-    """Configure logging for the bot."""
+    """Настроить логирование для бота."""
     logging.basicConfig(
         level=logging.INFO,
         format=LOG_FORMAT,
@@ -35,83 +35,83 @@ def setup_logging() -> None:
         ]
     )
     
-    # Reduce noise from some libraries
+    # Уменьшить шум от некоторых библиотек
     logging.getLogger("aiogram").setLevel(logging.INFO)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
 
 
 def check_configuration() -> bool:
-    """Check if all required configuration is set."""
+    """Проверить установлена ли вся необходимая конфигурация."""
     if not BOT_TOKEN:
-        logging.error("BOT_TOKEN is not set in .env file!")
+        logging.error("BOT_TOKEN не установлен в файле .env!")
         return False
     
     if BOT_TOKEN == "YOUR_BOT_TOKEN_HERE":
-        logging.error("Please set your actual BOT_TOKEN in .env file!")
+        logging.error("Пожалуйста, установите ваш настоящий BOT_TOKEN в файле .env!")
         return False
     
     return True
 
 
 async def on_startup(bot: Bot) -> None:
-    """Actions performed on bot startup."""
-    logging.info("Bot starting up...")
+    """Действия при запуске бота."""
+    logging.info("Бот запускается...")
     
-    # Initialize database
+    # Инициализировать базу данных
     try:
         init_database()
-        logging.info(f"Database initialized at: {sqlite_database_filepath}")
+        logging.info(f"База данных инициализирована: {sqlite_database_filepath}")
     except Exception as e:
-        logging.error(f"Failed to initialize database: {e}")
+        logging.error(f"Не удалось инициализировать базу данных: {e}")
         raise
     
-    # Get bot info
+    # Получить информацию о боте
     try:
         bot_info = await bot.get_me()
-        logging.info(f"Bot username: @{bot_info.username}")
-        logging.info(f"Bot name: {bot_info.full_name}")
+        logging.info(f"Имя бота: @{bot_info.username}")
+        logging.info(f"Полное имя: {bot_info.full_name}")
     except Exception as e:
-        logging.error(f"Failed to get bot info: {e}")
+        logging.error(f"Не удалось получить информацию о боте: {e}")
         raise
     
-    logging.info("Bot started successfully!")
+    logging.info("Бот успешно запущен!")
 
 
 async def on_shutdown(bot: Bot) -> None:
-    """Actions performed on bot shutdown."""
-    logging.info("Bot shutting down...")
+    """Действия при остановке бота."""
+    logging.info("Бот останавливается...")
 
 
 def main() -> None:
-    """Main entry point for the bot."""
-    # Setup logging
+    """Главная точка входа для бота."""
+    # Настроить логирование
     setup_logging()
     
-    # Check configuration
+    # Проверить конфигурацию
     if not check_configuration():
         sys.exit(1)
     
-    # Create bot instance
+    # Создать экземпляр бота
     bot = Bot(
         token=BOT_TOKEN,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
     
-    # Create FSM storage for state management
+    # Создать FSM хранилище для управления состоянием
     storage = MemoryStorage()
     
-    # Create dispatcher
+    # Создать диспетчер
     dp = Dispatcher(storage=storage)
     
-    # Include routers
+    # Включить роутеры
     dp.include_router(router)
     
-    # Register startup/shutdown hooks
+    # Зарегистрировать хуки запуска/остановки
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
     
-    # Start polling
-    logging.info("Starting bot polling...")
+    # Начать опрос
+    logging.info("Запуск опроса бота...")
     
     try:
         asyncio.run(dp.start_polling(
@@ -119,12 +119,12 @@ def main() -> None:
             allowed_updates=dp.resolve_used_update_types()
         ))
     except KeyboardInterrupt:
-        logging.info("Bot stopped by user")
+        logging.info("Бот остановлен пользователем")
     except Exception as e:
-        logging.error(f"Bot error: {e}")
+        logging.error(f"Ошибка бота: {e}")
         raise
     finally:
-        logging.info("Bot shutdown complete")
+        logging.info("Бот полностью остановлен")
 
 
 if __name__ == "__main__":

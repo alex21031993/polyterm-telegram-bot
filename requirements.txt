@@ -5,3 +5,6 @@ pycryptodome==3.21.0
 typing-extensions==4.12.2
 pydantic==2.8.2
 python-dotenv==1.0.0
+tradingagents>=0.1.0
+yfinance>=0.2.0
+
