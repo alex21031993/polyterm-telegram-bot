@@ -14,7 +14,6 @@
 
 - Python 3.11+
 - PolyTerm (установлен в `/home/alexandr/.local/bin/polyterm`)
-- TradingAgents фреймворк (настраивается через `TRADINGAGENTS_PATH`)
 - Telegram Bot Token
 
 ## Установка

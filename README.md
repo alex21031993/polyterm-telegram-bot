@@ -14,7 +14,6 @@ A complete Telegram bot that integrates PolyTerm (terminal client for Polymarket
 
 - Python 3.11+
 - PolyTerm (installed at `/home/alexandr/.local/bin/polyterm`)
-- TradingAgents framework (configured via `TRADINGAGENTS_PATH`)
 - Telegram Bot Token
 
 ## Installation
